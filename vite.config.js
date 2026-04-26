@@ -1,0 +1,38 @@
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+import vue from '@vitejs/plugin-vue';
+import tailwindcss from '@tailwindcss/vite';
+import { fileURLToPath, URL } from 'node:url';
+
+export default defineConfig({
+    resolve: {
+        alias: {
+            '@': fileURLToPath(new URL('./resources/js', import.meta.url)),
+        },
+    },
+    plugins: [
+        tailwindcss(),
+        laravel({
+            input: ['resources/css/app.css', 'resources/js/app.js'],
+            refresh: true,
+        }),
+        vue({
+            template: {
+                transformAssetUrls: {
+                    base: null,
+                    includeAbsolute: false,
+                },
+            },
+        }),
+    ],
+    // --- TAMBAHKAN BAGIAN SERVER DI BAWAH INI ---
+    server: {
+        host: '0.0.0.0', // Mengizinkan akses dari IP luar
+        hmr: {
+            host: 'localhost', // Tetap gunakan localhost untuk Hot Module Replacement lokal
+        },
+        cors: {
+            origin: '*', // Mengizinkan semua origin termasuk Ngrok untuk mengakses file JS
+        },
+    },
+});
