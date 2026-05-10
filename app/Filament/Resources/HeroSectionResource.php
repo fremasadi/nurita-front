@@ -13,9 +13,13 @@ use Filament\Tables\Table;
 class HeroSectionResource extends Resource
 {
     protected static ?string $model = HeroSection::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-home';
+
     protected static ?string $navigationLabel = 'Hero Section';
+
     protected static ?string $navigationGroup = 'Landing Page';
+
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -47,8 +51,10 @@ class HeroSectionResource extends Resource
                         ]),
                 ])
                 ->columnSpanFull(),
-            Forms\Components\TextInput::make('button_url')
-                ->label('Button URL')->url()->maxLength(255),
+            // Forms\Components\TextInput::make('button_url')
+            //     ->label('Button URL')
+            //     ->helperText('Bisa berupa anchor seperti #kontak, path seperti /kontak, atau URL lengkap.')
+            //     ->maxLength(255),
             Forms\Components\FileUpload::make('image')
                 ->label('Hero Image')->image()->directory('hero'),
         ]);
@@ -66,10 +72,17 @@ class HeroSectionResource extends Resource
             ->paginated(false);
     }
 
+    public static function canCreate(): bool
+    {
+        return ! static::getModel()::query()->exists();
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ManageHeroSections::route('/'),
+            'create' => Pages\CreateHeroSection::route('/create'),
+            'edit' => Pages\EditHeroSection::route('/{record}/edit'),
         ];
     }
 }

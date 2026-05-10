@@ -63,10 +63,17 @@ class ContactSettingResource extends Resource
             ->paginated(false);
     }
 
+    public static function canCreate(): bool
+    {
+        return ! static::getModel()::query()->exists();
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ManageContactSettings::route('/'),
+            'create' => Pages\CreateContactSetting::route('/create'),
+            'edit' => Pages\EditContactSetting::route('/{record}/edit'),
         ];
     }
 }
