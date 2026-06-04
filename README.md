@@ -1,5 +1,58 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
+## Docker Production Deployment
+
+The production stack contains Nginx, PHP-FPM, a queue worker, the Laravel
+scheduler, and MariaDB. Uploaded files and database data are stored in named
+Docker volumes.
+
+### First deployment
+
+The server needs Docker Engine with the Compose plugin and Git.
+
+```sh
+git clone <repository-url> nurita-front
+cd nurita-front
+cp .env.docker.example .env.docker
+```
+
+Fill the secrets and public URL in `.env.docker`. Generate an `APP_KEY` with
+`printf 'base64:%s\n' "$(openssl rand -base64 32)"`, then deploy:
+
+```sh
+chmod +x scripts/deploy.sh
+./scripts/deploy.sh
+```
+
+The application is available on `APP_PORT` (default `8080`). Point a TLS
+reverse proxy such as Caddy, Traefik, or the host Nginx to that port. Do not
+expose the MariaDB container port publicly.
+
+### Routine operations
+
+```sh
+# Deploy the latest checked-out code
+./scripts/deploy.sh
+
+# View application and worker logs
+docker compose --env-file .env.docker logs -f app web queue scheduler
+
+# Run an Artisan command
+docker compose --env-file .env.docker exec app php artisan about
+
+# Enable or disable maintenance mode
+docker compose --env-file .env.docker exec app php artisan down
+docker compose --env-file .env.docker exec app php artisan up
+
+# Back up the database (variables are loaded from .env.docker by the shell)
+set -a; . ./.env.docker; set +a
+docker compose --env-file .env.docker exec -T db \
+  mariadb-dump -u root -p"$DB_ROOT_PASSWORD" "$DB_DATABASE" > backup.sql
+```
+
+Keep `.env.docker` and off-server database backups secure. Never run
+`docker compose down -v` on production because it deletes persistent data.
+
 <p align="center">
 <a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
