@@ -6,6 +6,33 @@ const props = defineProps({ portfolios: Array });
 const lang = inject('lang');
 
 const t = (item, field) => item[`${field}_${lang.value}`] ?? item[`${field}_id`] ?? '';
+
+const normalizeTags = (tags) => {
+    if (Array.isArray(tags)) {
+        return tags;
+    }
+
+    if (!tags) {
+        return [];
+    }
+
+    try {
+        const parsedTags = JSON.parse(tags);
+
+        if (Array.isArray(parsedTags)) {
+            return parsedTags;
+        }
+    } catch {
+        // Fallback for comma-separated tag strings.
+    }
+
+    return tags
+        .toString()
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean);
+};
+
 const heading = { id: 'Solusi yang Telah Kami Kembangkan', en: 'Solutions We Have Developed' };
 const subheading = {
     id: 'Kami terus mengembangkan berbagai solusi digital yang dirancang untuk menjawab kebutuhan bisnis modern.',
@@ -34,7 +61,7 @@ const placeholderColors = [
             </div>
 
             <!-- Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-6">
                 <div
                     v-for="(project, index) in portfolios"
                     :key="project.id"
@@ -58,7 +85,7 @@ const placeholderColors = [
                         <p class="text-[#64748B] dark:text-slate-400 text-sm leading-relaxed">{{ t(project, 'description') }}</p>
                         <div class="flex flex-wrap gap-2 pt-1">
                             <span
-                                v-for="tag in (project.tags || [])"
+                                v-for="tag in normalizeTags(project.tags)"
                                 :key="tag"
                                 class="text-xs text-[#64748B] dark:text-slate-400 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded"
                             >

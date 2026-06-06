@@ -1,5 +1,5 @@
 <script setup>
-import { provide, ref, watch } from 'vue';
+import { computed, provide, ref, watch } from 'vue';
 import Navbar from '@/Components/Sections/Navbar.vue';
 import Footer from '@/Components/Sections/Footer.vue';
 import WhatsAppFAB from '@/Components/Sections/WhatsAppFAB.vue';
@@ -12,6 +12,7 @@ const props = defineProps({
 
 const isDark = ref(false);
 const lang = ref('id');
+const activeCategory = ref('all');
 
 watch(isDark, (val) => {
     document.documentElement.classList.toggle('dark', val);
@@ -21,6 +22,61 @@ provide('isDark', isDark);
 provide('lang', lang);
 
 const t = (item, field) => item[`${field}_${lang.value}`] ?? item[`${field}_id`] ?? '';
+
+const normalizeTags = (tags) => {
+    if (Array.isArray(tags)) {
+        return tags;
+    }
+
+    if (!tags) {
+        return [];
+    }
+
+    try {
+        const parsedTags = JSON.parse(tags);
+
+        if (Array.isArray(parsedTags)) {
+            return parsedTags;
+        }
+    } catch {
+        // Fallback for comma-separated tag strings.
+    }
+
+    return tags
+        .toString()
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean);
+};
+
+const categoryFilters = [
+    { value: 'all', label: { id: 'Semua', en: 'All' } },
+    { value: 'web', label: { id: 'Web', en: 'Web' } },
+    { value: 'mobile', label: { id: 'Mobile', en: 'Mobile' } },
+    { value: 'mobile-web', label: { id: 'Mobile & Web', en: 'Mobile & Web' } },
+];
+
+const normalizeCategory = (value) => (value ?? '')
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/\s*&\s*/g, '-')
+    .replace(/\s+/g, '-');
+
+const filteredPortfolios = computed(() => {
+    if (activeCategory.value === 'all') {
+        return props.portfolios ?? [];
+    }
+
+    return (props.portfolios ?? []).filter((portfolio) => {
+        const categories = [
+            portfolio.category_id,
+            portfolio.category_en,
+        ].map(normalizeCategory);
+
+        return categories.includes(activeCategory.value);
+    });
+});
 
 const heading = {
     id: 'Portofolio Kami',
@@ -75,9 +131,24 @@ const placeholderColors = [
                         </div>
                     </div>
 
-                    <div v-if="props.portfolios?.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="flex flex-wrap gap-3 mb-10">
+                        <button
+                            v-for="filter in categoryFilters"
+                            :key="filter.value"
+                            type="button"
+                            class="px-4 py-2 rounded-full text-sm font-medium border transition-all duration-200"
+                            :class="activeCategory === filter.value
+                                ? 'bg-[#013A3B] text-white border-[#013A3B] dark:bg-teal-700 dark:border-teal-700'
+                                : 'bg-white dark:bg-[#1e293b] text-[#64748B] dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:text-[#013A3B] dark:hover:text-teal-400 hover:border-[#013A3B] dark:hover:border-teal-500'"
+                            @click="activeCategory = filter.value"
+                        >
+                            {{ filter.label[lang] }}
+                        </button>
+                    </div>
+
+                    <div v-if="filteredPortfolios.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <article
-                            v-for="(project, index) in props.portfolios"
+                            v-for="(project, index) in filteredPortfolios"
                             :key="project.id"
                             class="bg-white dark:bg-[#1e293b] rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group"
                         >
@@ -101,7 +172,7 @@ const placeholderColors = [
                                 </p>
                                 <div class="flex flex-wrap gap-2 pt-1">
                                     <span
-                                        v-for="tag in (project.tags || [])"
+                                        v-for="tag in normalizeTags(project.tags)"
                                         :key="tag"
                                         class="text-xs text-[#64748B] dark:text-slate-400 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded"
                                     >

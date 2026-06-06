@@ -14,7 +14,7 @@ Route::get('/', function () {
         'hero' => HeroSection::first(),
         'services' => Service::where('is_active', true)->orderBy('order')->get(),
         'features' => Feature::where('is_active', true)->orderBy('order')->get(),
-        'portfolios' => Portfolio::where('is_active', true)->orderBy('order')->limit(4)->get(),
+        'portfolios' => Portfolio::where('is_active', true)->orderBy('order')->limit(3)->get(),
         'workSteps' => WorkStep::where('is_active', true)->orderBy('order')->get(),
         'contact' => ContactSetting::first(),
     ]);
