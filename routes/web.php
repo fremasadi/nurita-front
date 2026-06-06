@@ -14,8 +14,15 @@ Route::get('/', function () {
         'hero' => HeroSection::first(),
         'services' => Service::where('is_active', true)->orderBy('order')->get(),
         'features' => Feature::where('is_active', true)->orderBy('order')->get(),
-        'portfolios' => Portfolio::where('is_active', true)->orderBy('order')->get(),
+        'portfolios' => Portfolio::where('is_active', true)->orderBy('order')->limit(4)->get(),
         'workSteps' => WorkStep::where('is_active', true)->orderBy('order')->get(),
         'contact' => ContactSetting::first(),
     ]);
 });
+
+Route::get('/portofolio', function () {
+    return Inertia::render('PortofolioPage', [
+        'portfolios' => Portfolio::where('is_active', true)->orderBy('order')->get(),
+        'contact' => ContactSetting::first(),
+    ]);
+})->name('portofolio.index');

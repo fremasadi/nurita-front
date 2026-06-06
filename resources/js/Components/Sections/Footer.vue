@@ -1,19 +1,32 @@
 <script setup>
-const navLinks = [
-    { label: 'Beranda', href: '#beranda' },
-    { label: 'Layanan', href: '#layanan' },
-    { label: 'Keunggulan', href: '#keunggulan' },
-    { label: 'Portofolio', href: '#portofolio' },
-    { label: 'Cara Kerja', href: '#cara-kerja' },
-    { label: 'Hubungi Kami', href: '#kontak' },
-];
+import { computed, inject } from 'vue';
 
-const serviceLinks = [
-    { label: 'Web Development', href: '#layanan' },
-    { label: 'Mobile Applications', href: '#layanan' },
-    { label: 'UI/UX Design', href: '#layanan' },
-    { label: 'Sistem ERP', href: '#layanan' },
-];
+const lang = inject('lang');
+
+const content = computed(() => ({
+    tagline: lang.value === 'id'
+        ? 'Membantu Bisnis Anda Lebih Efisien dengan Sistem Digital'
+        : 'Helping Your Business Run More Efficiently with Digital Systems',
+    navigationTitle: lang.value === 'id' ? 'Navigasi' : 'Navigation',
+    servicesTitle: lang.value === 'id' ? 'Layanan' : 'Services',
+    copyright: lang.value === 'id' ? 'Hak cipta dilindungi.' : 'All rights reserved.',
+}));
+
+const navLinks = computed(() => [
+    { label: lang.value === 'id' ? 'Beranda' : 'Home', href: '#beranda' },
+    { label: lang.value === 'id' ? 'Layanan' : 'Services', href: '#layanan' },
+    { label: lang.value === 'id' ? 'Keunggulan' : 'Advantages', href: '#keunggulan' },
+    { label: lang.value === 'id' ? 'Portofolio' : 'Portfolio', href: '#portofolio' },
+    { label: lang.value === 'id' ? 'Cara Kerja' : 'How It Works', href: '#cara-kerja' },
+    { label: lang.value === 'id' ? 'Hubungi Kami' : 'Contact Us', href: '#kontak' },
+]);
+
+const serviceLinks = computed(() => [
+    { label: lang.value === 'id' ? 'Pengembangan Web' : 'Web Development', href: '#layanan' },
+    { label: lang.value === 'id' ? 'Aplikasi Mobile' : 'Mobile Applications', href: '#layanan' },
+    { label: lang.value === 'id' ? 'Desain UI/UX' : 'UI/UX Design', href: '#layanan' },
+    { label: lang.value === 'id' ? 'Sistem ERP' : 'ERP Systems', href: '#layanan' },
+]);
 
 const socialLinks = [
     {
@@ -39,7 +52,7 @@ const socialLinks = [
                         <span class="text-xl font-bold text-[#013A3B] dark:text-teal-400">Nurita</span>
                     </a>
                     <p class="text-[#64748B] dark:text-slate-400 text-sm leading-relaxed max-w-xs">
-                        Membantu Bisnis Anda Lebih Efisien dengan Sistem Digital
+                        {{ content.tagline }}
                     </p>
                     <div class="flex gap-3">
                         <a
@@ -56,9 +69,9 @@ const socialLinks = [
 
                 <!-- Navigation -->
                 <div class="space-y-4">
-                    <h4 class="font-semibold text-[#001818] dark:text-slate-100 text-sm">Navigasi</h4>
+                    <h4 class="font-semibold text-[#001818] dark:text-slate-100 text-sm">{{ content.navigationTitle }}</h4>
                     <ul class="space-y-2">
-                        <li v-for="link in navLinks" :key="link.label">
+                        <li v-for="link in navLinks" :key="link.href">
                             <a :href="link.href" class="text-[#64748B] dark:text-slate-400 text-sm hover:text-[#013A3B] dark:hover:text-teal-400 transition-colors duration-200">
                                 {{ link.label }}
                             </a>
@@ -68,7 +81,7 @@ const socialLinks = [
 
                 <!-- Services -->
                 <div class="space-y-4">
-                    <h4 class="font-semibold text-[#001818] dark:text-slate-100 text-sm">Layanan</h4>
+                    <h4 class="font-semibold text-[#001818] dark:text-slate-100 text-sm">{{ content.servicesTitle }}</h4>
                     <ul class="space-y-2">
                         <li v-for="link in serviceLinks" :key="link.label">
                             <a :href="link.href" class="text-[#64748B] dark:text-slate-400 text-sm hover:text-[#013A3B] dark:hover:text-teal-400 transition-colors duration-200">
@@ -84,7 +97,7 @@ const socialLinks = [
         <div class="border-t border-slate-100 dark:border-slate-800 py-6">
             <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center">
                 <p class="text-[#64748B] dark:text-slate-500 text-sm">
-                    © {{ new Date().getFullYear() }} Nurita Tech. All rights reserved.
+                    © {{ new Date().getFullYear() }} Nurita Tech. {{ content.copyright }}
                 </p>
             </div>
         </div>

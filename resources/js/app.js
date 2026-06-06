@@ -4,7 +4,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
 createInertiaApp({
-    title: (title) => `${title} - ${import.meta.env.VITE_APP_NAME}`,
+    title: (title) => title ? `${title} - Nurita` : 'Nurita',
     resolve: (name) =>
         resolvePageComponent(
             `./Pages/${name}.vue`,

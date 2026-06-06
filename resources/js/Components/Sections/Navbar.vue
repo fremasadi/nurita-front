@@ -1,5 +1,5 @@
 <script setup>
-import { ref, inject, onMounted, onUnmounted } from 'vue';
+import { computed, ref, inject, onMounted, onUnmounted } from 'vue';
 
 const lang = inject('lang');
 const toggleLang = () => { lang.value = lang.value === 'id' ? 'en' : 'id'; };
@@ -10,13 +10,13 @@ const toggleDark = () => { isDark.value = !isDark.value; };
 const isScrolled = ref(false);
 const isMobileOpen = ref(false);
 
-const navLinks = [
-    { label: 'Layanan', href: '#layanan' },
-    { label: 'Keunggulan', href: '#keunggulan' },
-    { label: 'Portofolio', href: '#portofolio' },
-    { label: 'Cara Kerja', href: '#cara-kerja' },
-    { label: 'Hubungi Kami', href: '#kontak' },
-];
+const navLinks = computed(() => [
+    { label: lang.value === 'id' ? 'Layanan' : 'Services', href: '#layanan' },
+    { label: lang.value === 'id' ? 'Keunggulan' : 'Advantages', href: '#keunggulan' },
+    { label: lang.value === 'id' ? 'Portofolio' : 'Portfolio', href: '#portofolio' },
+    { label: lang.value === 'id' ? 'Cara Kerja' : 'How It Works', href: '#cara-kerja' },
+    { label: lang.value === 'id' ? 'Hubungi Kami' : 'Contact Us', href: '#kontak' },
+]);
 
 const handleScroll = () => { isScrolled.value = window.scrollY > 20; };
 
