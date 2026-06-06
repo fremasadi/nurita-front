@@ -21,8 +21,8 @@ class FeatureResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Textarea::make('icon')
-                ->label('Icon (SVG HTML)')->required()->rows(4)->columnSpanFull(),
+            // Forms\Components\Textarea::make('icon')
+            //     ->label('Icon (SVG HTML)')->required()->rows(4)->columnSpanFull(),
             Forms\Components\Tabs::make('Languages')
                 ->tabs([
                     Forms\Components\Tabs\Tab::make('Indonesia')
