@@ -18,6 +18,12 @@ class PortfolioResource extends Resource
     protected static ?string $navigationGroup = 'Landing Page';
     protected static ?int $navigationSort = 4;
 
+    protected static array $categoryOptions = [
+        'Web' => 'Web',
+        'Mobile' => 'Mobile',
+        'Mobile & Web' => 'Mobile & Web',
+    ];
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -26,13 +32,21 @@ class PortfolioResource extends Resource
                     Forms\Components\Tabs\Tab::make('Indonesia')
                         ->schema([
                             Forms\Components\TextInput::make('title_id')->label('Judul')->required()->maxLength(255),
-                            Forms\Components\TextInput::make('category_id')->label('Kategori')->required()->maxLength(255),
+                            Forms\Components\Select::make('category_id')
+                                ->label('Kategori')
+                                ->options(static::$categoryOptions)
+                                ->native(false)
+                                ->required(),
                             Forms\Components\Textarea::make('description_id')->label('Deskripsi')->required()->rows(3),
                         ]),
                     Forms\Components\Tabs\Tab::make('English')
                         ->schema([
                             Forms\Components\TextInput::make('title_en')->label('Title')->required()->maxLength(255),
-                            Forms\Components\TextInput::make('category_en')->label('Category')->required()->maxLength(255),
+                            Forms\Components\Select::make('category_en')
+                                ->label('Category')
+                                ->options(static::$categoryOptions)
+                                ->native(false)
+                                ->required(),
                             Forms\Components\Textarea::make('description_en')->label('Description')->required()->rows(3),
                         ]),
                 ])
