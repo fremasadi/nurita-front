@@ -27,6 +27,8 @@ class ContactSettingResource extends Resource
                     Forms\Components\TextInput::make('phone')->label('Telepon')->tel()->required(),
                     Forms\Components\TextInput::make('address')->label('Alamat')->required(),
                     Forms\Components\TextInput::make('whatsapp_number')->label('Nomor WhatsApp')->required(),
+                    Forms\Components\TextInput::make('instagram_url')->label('URL Instagram')->url()->maxLength(255),
+                    Forms\Components\TextInput::make('facebook_url')->label('URL Facebook')->url()->maxLength(255),
                 ])
                 ->columns(2),
             Forms\Components\Tabs::make('Languages')
@@ -57,6 +59,8 @@ class ContactSettingResource extends Resource
                 Tables\Columns\TextColumn::make('email')->label('Email'),
                 Tables\Columns\TextColumn::make('phone')->label('Telepon'),
                 Tables\Columns\TextColumn::make('whatsapp_number')->label('WhatsApp'),
+                Tables\Columns\TextColumn::make('instagram_url')->label('Instagram')->limit(30),
+                Tables\Columns\TextColumn::make('facebook_url')->label('Facebook')->limit(30),
                 Tables\Columns\TextColumn::make('updated_at')->label('Diperbarui')->dateTime('d M Y'),
             ])
             ->actions([Tables\Actions\EditAction::make()])

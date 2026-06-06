@@ -14,6 +14,8 @@ class ContactSettingSeeder extends Seeder
             'phone' => '+6282876543298',
             'address' => 'Kediri, Jawa Timur',
             'whatsapp_number' => '6282876543298',
+            'instagram_url' => null,
+            'facebook_url' => null,
             'whatsapp_message_id' => 'Halo, saya ingin berkonsultasi mengenai kebutuhan sistem digital untuk bisnis saya.',
             'whatsapp_message_en' => 'Hello, I would like to consult about digital system needs for my business.',
             'section_title_id' => 'Konsultasikan Kebutuhan Sistem Anda',

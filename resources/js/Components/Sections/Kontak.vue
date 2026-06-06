@@ -1,5 +1,6 @@
 <script setup>
 import { reactive, ref, inject, computed } from 'vue';
+import { router } from '@inertiajs/vue3';
 import BaseButton from '@/Components/Base/BaseButton.vue';
 
 const props = defineProps({ contact: Object });
@@ -7,10 +8,33 @@ const lang = inject('lang');
 
 const form = reactive({ name: '', email: '', phone: '', company: '', message: '' });
 const status = ref(null);
+const errors = ref({});
+const isSubmitting = ref(false);
 
 const handleSubmit = () => {
-    status.value = 'success';
-    setTimeout(() => { status.value = null; }, 4000);
+    errors.value = {};
+    status.value = null;
+    isSubmitting.value = true;
+
+    router.post('/contact-messages', form, {
+        preserveScroll: true,
+        onSuccess: () => {
+            form.name = '';
+            form.email = '';
+            form.phone = '';
+            form.company = '';
+            form.message = '';
+            status.value = 'success';
+            setTimeout(() => { status.value = null; }, 4000);
+        },
+        onError: (validationErrors) => {
+            errors.value = validationErrors;
+            status.value = 'error';
+        },
+        onFinish: () => {
+            isSubmitting.value = false;
+        },
+    });
 };
 
 const t = (field) => props.contact?.[`${field}_${lang.value}`] ?? props.contact?.[`${field}_id`] ?? '';
@@ -66,16 +90,19 @@ const inputClass = 'w-full px-4 py-3 rounded-lg border border-slate-200 dark:bor
                             <div class="space-y-1.5">
                                 <label class="text-sm font-medium text-[#001818] dark:text-slate-200">{{ lang === 'id' ? 'Nama Lengkap' : 'Full Name' }}</label>
                                 <input v-model="form.name" type="text" :placeholder="lang === 'id' ? 'Masukkan nama lengkap' : 'Enter your full name'" :class="inputClass" required />
+                                <p v-if="errors.name" class="text-xs text-red-500">{{ errors.name }}</p>
                             </div>
                             <div class="space-y-1.5">
                                 <label class="text-sm font-medium text-[#001818] dark:text-slate-200">Email</label>
                                 <input v-model="form.email" type="email" :placeholder="lang === 'id' ? 'Masukkan email' : 'Enter your email'" :class="inputClass" required />
+                                <p v-if="errors.email" class="text-xs text-red-500">{{ errors.email }}</p>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <label class="text-sm font-medium text-[#001818] dark:text-slate-200">{{ lang === 'id' ? 'No. HP' : 'Phone Number' }}</label>
                                 <input v-model="form.phone" type="tel" :placeholder="lang === 'id' ? 'Masukkan nomor HP' : 'Enter your phone number'" :class="inputClass" required />
+                                <p v-if="errors.phone" class="text-xs text-red-500">{{ errors.phone }}</p>
                             </div>
                             <div class="space-y-1.5">
                                 <label class="text-sm font-medium text-[#001818] dark:text-slate-200">
@@ -83,20 +110,25 @@ const inputClass = 'w-full px-4 py-3 rounded-lg border border-slate-200 dark:bor
                                     <span class="text-[#64748B] dark:text-slate-500 font-normal">{{ lang === 'id' ? '(Opsional)' : '(Optional)' }}</span>
                                 </label>
                                 <input v-model="form.company" type="text" :placeholder="lang === 'id' ? 'Masukkan nama perusahaan' : 'Enter company name'" :class="inputClass" />
+                                <p v-if="errors.company" class="text-xs text-red-500">{{ errors.company }}</p>
                             </div>
                         </div>
                         <div class="space-y-1.5">
                             <label class="text-sm font-medium text-[#001818] dark:text-slate-200">{{ lang === 'id' ? 'Kebutuhan / Pesan' : 'Message / Requirements' }}</label>
                             <textarea v-model="form.message" rows="4" :placeholder="lang === 'id' ? 'Masukkan kebutuhan / pesan' : 'Enter your message or requirements'" :class="inputClass" required></textarea>
+                            <p v-if="errors.message" class="text-xs text-red-500">{{ errors.message }}</p>
                         </div>
 
                         <!-- Status -->
                         <div v-if="status === 'success'" class="text-sm text-[#22C55E] bg-[#22C55E]/10 px-4 py-3 rounded-lg">
                             {{ lang === 'id' ? 'Pesan berhasil dikirim! Kami akan menghubungi Anda segera.' : 'Message sent successfully! We will contact you shortly.' }}
                         </div>
+                        <div v-if="status === 'error'" class="text-sm text-red-500 bg-red-500/10 px-4 py-3 rounded-lg">
+                            {{ lang === 'id' ? 'Mohon periksa kembali data yang Anda isi.' : 'Please check the data you entered.' }}
+                        </div>
 
-                        <BaseButton type="submit" variant="primary" size="lg" class="w-full">
-                            {{ lang === 'id' ? 'Kirim' : 'Send' }}
+                        <BaseButton type="submit" variant="primary" size="lg" class="w-full" :class="isSubmitting ? 'opacity-70 pointer-events-none' : ''">
+                            {{ isSubmitting ? (lang === 'id' ? 'Mengirim...' : 'Sending...') : (lang === 'id' ? 'Kirim' : 'Send') }}
                         </BaseButton>
                     </form>
                 </div>
