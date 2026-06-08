@@ -1,5 +1,5 @@
 <script setup>
-import { computed, inject, ref, watch } from 'vue';
+import { computed, inject, onUnmounted, ref, watch } from 'vue';
 import BaseButton from '@/Components/Base/BaseButton.vue';
 
 const props = defineProps({
@@ -12,9 +12,35 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 const lang = inject('lang');
 const activeImageIndex = ref(0);
+let sliderInterval = null;
+
+const stopSlider = () => {
+    if (sliderInterval) {
+        clearInterval(sliderInterval);
+        sliderInterval = null;
+    }
+};
+
+const startSlider = () => {
+    stopSlider();
+
+    if ((props.project?.image_urls ?? []).length <= 1) {
+        return;
+    }
+
+    sliderInterval = setInterval(() => {
+        activeImageIndex.value = (activeImageIndex.value + 1) % props.project.image_urls.length;
+    }, 1500);
+};
 
 watch(() => props.project?.id, () => {
     activeImageIndex.value = 0;
+    startSlider();
+}, { immediate: true });
+
+watch(() => props.project?.image_urls?.length, () => {
+    activeImageIndex.value = 0;
+    startSlider();
 });
 
 const t = (item, field) => item?.[`${field}_${lang.value}`] ?? item?.[`${field}_id`] ?? '';
@@ -47,6 +73,8 @@ const normalizeTags = (tags) => {
 
 const images = computed(() => props.project?.image_urls ?? []);
 const activeImage = computed(() => images.value[activeImageIndex.value] ?? props.project?.primary_image_url);
+
+onUnmounted(stopSlider);
 </script>
 
 <template>
@@ -91,7 +119,7 @@ const activeImage = computed(() => images.value[activeImageIndex.value] ?? props
                                 type="button"
                                 class="aspect-video rounded-lg overflow-hidden border-2 transition-all"
                                 :class="activeImageIndex === index ? 'border-[#013A3B] dark:border-teal-400' : 'border-transparent opacity-70 hover:opacity-100'"
-                                @click="activeImageIndex = index"
+                                @click="activeImageIndex = index; startSlider()"
                             >
                                 <img :src="image" :alt="`${t(project, 'title')} ${index + 1}`" class="w-full h-full object-cover" />
                             </button>

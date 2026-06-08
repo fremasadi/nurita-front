@@ -17,19 +17,19 @@ const content = computed(() => ({
 }));
 
 const navLinks = computed(() => [
-    { label: lang.value === 'id' ? 'Beranda' : 'Home', href: '#beranda' },
-    { label: lang.value === 'id' ? 'Layanan' : 'Services', href: '#layanan' },
-    { label: lang.value === 'id' ? 'Keunggulan' : 'Advantages', href: '#keunggulan' },
-    { label: lang.value === 'id' ? 'Portofolio' : 'Portfolio', href: '#portofolio' },
-    { label: lang.value === 'id' ? 'Cara Kerja' : 'How It Works', href: '#cara-kerja' },
-    { label: lang.value === 'id' ? 'Hubungi Kami' : 'Contact Us', href: '#kontak' },
+    { label: lang.value === 'id' ? 'Beranda' : 'Home', href: '/#beranda' },
+    { label: lang.value === 'id' ? 'Layanan' : 'Services', href: '/#layanan' },
+    { label: lang.value === 'id' ? 'Keunggulan' : 'Advantages', href: '/#keunggulan' },
+    { label: lang.value === 'id' ? 'Portofolio' : 'Portfolio', href: '/#portofolio' },
+    { label: lang.value === 'id' ? 'Cara Kerja' : 'How It Works', href: '/#cara-kerja' },
+    { label: lang.value === 'id' ? 'Hubungi Kami' : 'Contact Us', href: '/#kontak' },
 ]);
 
 const serviceLinks = computed(() => [
-    { label: lang.value === 'id' ? 'Pengembangan Web' : 'Web Development', href: '#layanan' },
-    { label: lang.value === 'id' ? 'Aplikasi Mobile' : 'Mobile Applications', href: '#layanan' },
-    { label: lang.value === 'id' ? 'Desain UI/UX' : 'UI/UX Design', href: '#layanan' },
-    { label: lang.value === 'id' ? 'Sistem ERP' : 'ERP Systems', href: '#layanan' },
+    { label: lang.value === 'id' ? 'Pengembangan Web' : 'Web Development', href: '/#layanan' },
+    { label: lang.value === 'id' ? 'Aplikasi Mobile' : 'Mobile Applications', href: '/#layanan' },
+    { label: lang.value === 'id' ? 'Desain UI/UX' : 'UI/UX Design', href: '/#layanan' },
+    { label: lang.value === 'id' ? 'Sistem ERP' : 'ERP Systems', href: '/#layanan' },
 ]);
 
 const socialLinks = computed(() => [
@@ -52,7 +52,7 @@ const socialLinks = computed(() => [
             <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
                 <!-- Brand -->
                 <div class="md:col-span-2 space-y-4">
-                    <a href="#" class="flex items-center gap-2">
+                    <a href="/#beranda" class="flex items-center gap-2">
                         <span class="text-xl font-bold text-[#013A3B] dark:text-teal-400">Nurita</span>
                     </a>
                     <p class="text-[#64748B] dark:text-slate-400 text-sm leading-relaxed max-w-xs">

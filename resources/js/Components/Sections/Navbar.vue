@@ -11,11 +11,11 @@ const isScrolled = ref(false);
 const isMobileOpen = ref(false);
 
 const navLinks = computed(() => [
-    { label: lang.value === 'id' ? 'Layanan' : 'Services', href: '#layanan' },
-    { label: lang.value === 'id' ? 'Keunggulan' : 'Advantages', href: '#keunggulan' },
-    { label: lang.value === 'id' ? 'Portofolio' : 'Portfolio', href: '#portofolio' },
-    { label: lang.value === 'id' ? 'Cara Kerja' : 'How It Works', href: '#cara-kerja' },
-    { label: lang.value === 'id' ? 'Hubungi Kami' : 'Contact Us', href: '#kontak' },
+    { label: lang.value === 'id' ? 'Layanan' : 'Services', href: '/#layanan' },
+    { label: lang.value === 'id' ? 'Keunggulan' : 'Advantages', href: '/#keunggulan' },
+    { label: lang.value === 'id' ? 'Portofolio' : 'Portfolio', href: '/#portofolio' },
+    { label: lang.value === 'id' ? 'Cara Kerja' : 'How It Works', href: '/#cara-kerja' },
+    { label: lang.value === 'id' ? 'Hubungi Kami' : 'Contact Us', href: '/#kontak' },
 ]);
 
 const handleScroll = () => { isScrolled.value = window.scrollY > 20; };
@@ -32,7 +32,7 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll));
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- Logo -->
-                <a href="#" class="flex items-center gap-2">
+                <a href="/#beranda" class="flex items-center gap-2">
                     <img src="/assets/icons/ic_logo.png" alt="Nurita Logo" class="h-8 w-auto dark:brightness-200" />
                     <span class="text-xl font-bold text-[#013A3B] dark:text-teal-400">Nurita</span>
                 </a>
