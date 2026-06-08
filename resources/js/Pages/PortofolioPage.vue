@@ -4,6 +4,7 @@ import Navbar from '@/Components/Sections/Navbar.vue';
 import Footer from '@/Components/Sections/Footer.vue';
 import WhatsAppFAB from '@/Components/Sections/WhatsAppFAB.vue';
 import BaseButton from '@/Components/Base/BaseButton.vue';
+import PortfolioDetailModal from '@/Components/Sections/PortfolioDetailModal.vue';
 
 const props = defineProps({
     portfolios: Array,
@@ -13,6 +14,7 @@ const props = defineProps({
 const isDark = ref(false);
 const lang = ref('id');
 const activeCategory = ref('all');
+const selectedPortfolio = ref(null);
 
 watch(isDark, (val) => {
     document.documentElement.classList.toggle('dark', val);
@@ -152,13 +154,18 @@ const placeholderColors = [
                             :key="project.id"
                             class="bg-white dark:bg-[#1e293b] rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group"
                         >
-                            <div class="h-52 bg-gradient-to-br flex items-center justify-center relative overflow-hidden" :class="placeholderColors[index % placeholderColors.length]">
-                                <img v-if="project.image" :src="`/storage/${project.image}`" :alt="t(project, 'title')" class="w-full h-full object-cover" />
+                            <button
+                                type="button"
+                                class="h-52 bg-gradient-to-br flex items-center justify-center relative overflow-hidden w-full"
+                                :class="placeholderColors[index % placeholderColors.length]"
+                                @click="selectedPortfolio = project"
+                            >
+                                <img v-if="project.primary_image_url" :src="project.primary_image_url" :alt="t(project, 'title')" class="w-full h-full object-cover" />
                                 <svg v-else class="w-16 h-16 text-[#013A3B]/30 dark:text-teal-400/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                 </svg>
                                 <div class="absolute inset-0 bg-[#013A3B] opacity-0 group-hover:opacity-5 transition-opacity duration-300"></div>
-                            </div>
+                            </button>
 
                             <div class="p-6 space-y-3">
                                 <span class="text-xs font-medium text-[#013A3B] dark:text-teal-400 bg-[#013A3B]/10 dark:bg-teal-900/40 px-3 py-1 rounded-full">
@@ -179,8 +186,8 @@ const placeholderColors = [
                                         {{ tag }}
                                     </span>
                                 </div>
-                                <BaseButton v-if="project.demo_url" variant="outline" size="sm" :href="project.demo_url" class="mt-2">
-                                    Demo
+                                <BaseButton variant="outline" size="sm" as="button" class="mt-2" @click="selectedPortfolio = project">
+                                    {{ lang === 'id' ? 'Lihat Detail' : 'View Detail' }}
                                 </BaseButton>
                             </div>
                         </article>
@@ -195,5 +202,11 @@ const placeholderColors = [
 
         <Footer :contact="props.contact" />
         <WhatsAppFAB :contact="props.contact" />
+
+        <PortfolioDetailModal
+            v-if="selectedPortfolio"
+            :project="selectedPortfolio"
+            @close="selectedPortfolio = null"
+        />
     </div>
 </template>

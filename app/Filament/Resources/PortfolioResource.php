@@ -52,7 +52,12 @@ class PortfolioResource extends Resource
                 ])
                 ->columnSpanFull(),
             Forms\Components\FileUpload::make('image')
-                ->label('Gambar')->image()->directory('portfolios'),
+                ->label('Gambar')
+                ->image()
+                ->multiple()
+                ->reorderable()
+                ->appendFiles()
+                ->directory('portfolios'),
             Forms\Components\TextInput::make('demo_url')
                 ->label('Demo URL')->url()->maxLength(255),
             Forms\Components\TagsInput::make('tags')
@@ -67,7 +72,7 @@ class PortfolioResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('order')->label('#')->sortable(),
-                Tables\Columns\ImageColumn::make('image')->label('Gambar'),
+                Tables\Columns\ImageColumn::make('primary_image_url')->label('Gambar'),
                 Tables\Columns\TextColumn::make('title_id')->label('Judul (ID)'),
                 Tables\Columns\TextColumn::make('category_id')->label('Kategori'),
                 Tables\Columns\IconColumn::make('is_active')->label('Aktif')->boolean(),

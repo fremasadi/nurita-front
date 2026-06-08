@@ -1,9 +1,11 @@
 <script setup>
-import { inject } from 'vue';
+import { inject, ref } from 'vue';
 import BaseButton from '@/Components/Base/BaseButton.vue';
+import PortfolioDetailModal from '@/Components/Sections/PortfolioDetailModal.vue';
 
 const props = defineProps({ portfolios: Array });
 const lang = inject('lang');
+const selectedPortfolio = ref(null);
 
 const t = (item, field) => item[`${field}_${lang.value}`] ?? item[`${field}_id`] ?? '';
 
@@ -68,13 +70,18 @@ const placeholderColors = [
                     class="bg-white dark:bg-[#0f172a] rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group"
                 >
                     <!-- Image or Placeholder -->
-                    <div class="h-48 bg-gradient-to-br flex items-center justify-center relative overflow-hidden" :class="placeholderColors[index % placeholderColors.length]">
-                        <img v-if="project.image" :src="`/storage/${project.image}`" :alt="t(project, 'title')" class="w-full h-full object-cover" />
+                    <button
+                        type="button"
+                        class="h-48 bg-gradient-to-br flex items-center justify-center relative overflow-hidden w-full"
+                        :class="placeholderColors[index % placeholderColors.length]"
+                        @click="selectedPortfolio = project"
+                    >
+                        <img v-if="project.primary_image_url" :src="project.primary_image_url" :alt="t(project, 'title')" class="w-full h-full object-cover" />
                         <svg v-else class="w-16 h-16 text-[#013A3B]/30 dark:text-teal-400/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                         </svg>
                         <div class="absolute inset-0 bg-[#013A3B] opacity-0 group-hover:opacity-5 transition-opacity duration-300"></div>
-                    </div>
+                    </button>
 
                     <!-- Content -->
                     <div class="p-6 space-y-3">
@@ -92,8 +99,8 @@ const placeholderColors = [
                                 {{ tag }}
                             </span>
                         </div>
-                        <BaseButton v-if="project.demo_url" variant="outline" size="sm" :href="project.demo_url" class="mt-2">
-                            Demo
+                        <BaseButton variant="outline" size="sm" as="button" class="mt-2" @click="selectedPortfolio = project">
+                            {{ lang === 'id' ? 'Lihat Detail' : 'View Detail' }}
                         </BaseButton>
                     </div>
                 </div>
@@ -108,5 +115,11 @@ const placeholderColors = [
                 </BaseButton>
             </div>
         </div>
+
+        <PortfolioDetailModal
+            v-if="selectedPortfolio"
+            :project="selectedPortfolio"
+            @close="selectedPortfolio = null"
+        />
     </section>
 </template>
