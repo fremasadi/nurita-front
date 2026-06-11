@@ -123,7 +123,7 @@ onUnmounted(stopSlider);
                     <div class="bg-[#F1F5F9] dark:bg-[#1e293b] p-4 sm:p-6">
                         <button
                             type="button"
-                            class="aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-[#013A3B]/20 to-[#013A3B]/10 flex items-center justify-center w-full cursor-zoom-in"
+                            class="aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-[#013A3B]/20 to-[#013A3B]/10 flex items-center justify-center w-full cursor-zoom-in relative group/preview"
                             :aria-label="lang === 'id' ? 'Perbesar gambar portofolio' : 'Enlarge portfolio image'"
                             @click="openImagePreview"
                         >
@@ -137,6 +137,15 @@ onUnmounted(stopSlider);
                             <svg v-else class="w-20 h-20 text-[#013A3B]/30 dark:text-teal-400/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                             </svg>
+                            <span
+                                v-if="activeImage"
+                                class="absolute right-3 top-3 inline-flex items-center gap-2 rounded-lg bg-black/65 px-3 py-2 text-xs font-medium text-white shadow-sm backdrop-blur transition-colors group-hover/preview:bg-black/80"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m1.6-5.4a7 7 0 11-14 0 7 7 0 0114 0zM10.5 8v5m-2.5-2.5h5" />
+                                </svg>
+                                {{ lang === 'id' ? 'Perbesar' : 'Enlarge' }}
+                            </span>
                         </button>
 
                         <div v-if="images.length > 1" class="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3 mt-4">
