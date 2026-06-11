@@ -37,7 +37,10 @@ class PortfolioResource extends Resource
                                 ->options(static::$categoryOptions)
                                 ->native(false)
                                 ->required(),
-                            Forms\Components\Textarea::make('description_id')->label('Deskripsi')->required()->rows(3),
+                            Forms\Components\RichEditor::make('description_id')
+                                ->label('Deskripsi')
+                                ->required()
+                                ->columnSpanFull(),
                         ]),
                     Forms\Components\Tabs\Tab::make('English')
                         ->schema([
@@ -47,7 +50,10 @@ class PortfolioResource extends Resource
                                 ->options(static::$categoryOptions)
                                 ->native(false)
                                 ->required(),
-                            Forms\Components\Textarea::make('description_en')->label('Description')->required()->rows(3),
+                            Forms\Components\RichEditor::make('description_en')
+                                ->label('Description')
+                                ->required()
+                                ->columnSpanFull(),
                         ]),
                 ])
                 ->columnSpanFull(),

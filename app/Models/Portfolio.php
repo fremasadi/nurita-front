@@ -26,6 +26,8 @@ class Portfolio extends Model
         'image_urls',
         'image_names',
         'primary_image_url',
+        'plain_description_id',
+        'plain_description_en',
     ];
 
     public function getImageUrlsAttribute(): array
@@ -51,6 +53,16 @@ class Portfolio extends Model
         return $this->image_urls[0] ?? null;
     }
 
+    public function getPlainDescriptionIdAttribute(): string
+    {
+        return $this->plainTextFromHtml($this->description_id);
+    }
+
+    public function getPlainDescriptionEnAttribute(): string
+    {
+        return $this->plainTextFromHtml($this->description_en);
+    }
+
     protected function cleanImageUrl(string $image): string
     {
         if (Str::startsWith($image, ['http://', 'https://'])) {
@@ -63,5 +75,12 @@ class Portfolio extends Model
             ->toString();
 
         return url(Storage::disk('public')->url($path));
+    }
+
+    protected function plainTextFromHtml(?string $html): string
+    {
+        $text = html_entity_decode(strip_tags((string) $html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        return trim((string) preg_replace('/\s+/', ' ', $text));
     }
 }

@@ -8,6 +8,8 @@ const lang = inject('lang');
 const selectedPortfolio = ref(null);
 
 const t = (item, field) => item[`${field}_${lang.value}`] ?? item[`${field}_id`] ?? '';
+const stripHtml = (html) => (html ?? '').toString().replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+const previewDescription = (item) => item[`plain_description_${lang.value}`] ?? item.plain_description_id ?? stripHtml(t(item, 'description'));
 
 const normalizeTags = (tags) => {
     if (Array.isArray(tags)) {
@@ -76,7 +78,14 @@ const placeholderColors = [
                         :class="placeholderColors[index % placeholderColors.length]"
                         @click="selectedPortfolio = project"
                     >
-                        <img v-if="project.primary_image_url" :src="project.primary_image_url" :alt="t(project, 'title')" class="w-full h-full object-cover" />
+                        <img
+                            v-if="project.primary_image_url"
+                            :src="project.primary_image_url"
+                            :alt="t(project, 'title')"
+                            class="w-full h-full object-cover"
+                            loading="lazy"
+                            decoding="async"
+                        />
                         <svg v-else class="w-16 h-16 text-[#013A3B]/30 dark:text-teal-400/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                         </svg>
@@ -89,7 +98,9 @@ const placeholderColors = [
                             {{ t(project, 'category') }}
                         </span>
                         <h3 class="text-lg font-semibold text-[#001818] dark:text-slate-100">{{ t(project, 'title') }}</h3>
-                        <p class="text-[#64748B] dark:text-slate-400 text-sm leading-relaxed">{{ t(project, 'description') }}</p>
+                        <p class="text-[#64748B] dark:text-slate-400 text-sm leading-relaxed line-clamp-2 min-h-[2.75rem]">
+                            {{ previewDescription(project) }}
+                        </p>
                         <div class="flex flex-wrap gap-2 pt-1">
                             <span
                                 v-for="tag in normalizeTags(project.tags)"

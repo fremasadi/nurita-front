@@ -12,6 +12,7 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 const lang = inject('lang');
 const activeImageIndex = ref(0);
+const isImagePreviewOpen = ref(false);
 let sliderInterval = null;
 
 const stopSlider = () => {
@@ -35,6 +36,7 @@ const startSlider = () => {
 
 watch(() => props.project?.id, () => {
     activeImageIndex.value = 0;
+    isImagePreviewOpen.value = false;
     startSlider();
 }, { immediate: true });
 
@@ -74,6 +76,20 @@ const normalizeTags = (tags) => {
 const images = computed(() => props.project?.image_urls ?? []);
 const activeImage = computed(() => images.value[activeImageIndex.value] ?? props.project?.primary_image_url);
 
+const openImagePreview = () => {
+    if (!activeImage.value) {
+        return;
+    }
+
+    stopSlider();
+    isImagePreviewOpen.value = true;
+};
+
+const closeImagePreview = () => {
+    isImagePreviewOpen.value = false;
+    startSlider();
+};
+
 onUnmounted(stopSlider);
 </script>
 
@@ -105,12 +121,23 @@ onUnmounted(stopSlider);
                 <div class="overflow-y-auto">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
                     <div class="bg-[#F1F5F9] dark:bg-[#1e293b] p-4 sm:p-6">
-                        <div class="aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-[#013A3B]/20 to-[#013A3B]/10 flex items-center justify-center">
-                            <img v-if="activeImage" :src="activeImage" :alt="t(project, 'title')" class="w-full h-full object-cover" />
+                        <button
+                            type="button"
+                            class="aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-[#013A3B]/20 to-[#013A3B]/10 flex items-center justify-center w-full cursor-zoom-in"
+                            :aria-label="lang === 'id' ? 'Perbesar gambar portofolio' : 'Enlarge portfolio image'"
+                            @click="openImagePreview"
+                        >
+                            <img
+                                v-if="activeImage"
+                                :src="activeImage"
+                                :alt="t(project, 'title')"
+                                class="w-full h-full object-contain p-3"
+                                decoding="async"
+                            />
                             <svg v-else class="w-20 h-20 text-[#013A3B]/30 dark:text-teal-400/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                             </svg>
-                        </div>
+                        </button>
 
                         <div v-if="images.length > 1" class="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3 mt-4">
                             <button
@@ -121,15 +148,22 @@ onUnmounted(stopSlider);
                                 :class="activeImageIndex === index ? 'border-[#013A3B] dark:border-teal-400' : 'border-transparent opacity-70 hover:opacity-100'"
                                 @click="activeImageIndex = index; startSlider()"
                             >
-                                <img :src="image" :alt="`${t(project, 'title')} ${index + 1}`" class="w-full h-full object-cover" />
+                                <img
+                                    :src="image"
+                                    :alt="`${t(project, 'title')} ${index + 1}`"
+                                    class="w-full h-full object-contain p-1"
+                                    loading="lazy"
+                                    decoding="async"
+                                />
                             </button>
                         </div>
                     </div>
 
                     <div class="p-4 sm:p-6 lg:p-8 space-y-5">
-                        <p class="text-[#64748B] dark:text-slate-400 leading-relaxed">
-                            {{ t(project, 'description') }}
-                        </p>
+                        <div
+                            class="portfolio-description text-[#64748B] dark:text-slate-400 leading-relaxed"
+                            v-html="t(project, 'description')"
+                        ></div>
 
                         <div v-if="normalizeTags(project.tags).length" class="space-y-2">
                             <h4 class="text-sm font-semibold text-[#001818] dark:text-slate-100">
@@ -154,5 +188,99 @@ onUnmounted(stopSlider);
                 </div>
             </div>
         </div>
+
+        <div
+            v-if="isImagePreviewOpen && activeImage"
+            class="fixed inset-0 z-[110] bg-black/90 p-4 sm:p-8 flex items-center justify-center"
+            @click.self="closeImagePreview"
+        >
+            <button
+                type="button"
+                class="absolute right-4 top-4 sm:right-6 sm:top-6 w-10 h-10 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors"
+                :aria-label="lang === 'id' ? 'Tutup gambar besar' : 'Close enlarged image'"
+                @click="closeImagePreview"
+            >
+                <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <img
+                :src="activeImage"
+                :alt="t(project, 'title')"
+                class="max-w-full max-h-full object-contain"
+                decoding="async"
+            />
+        </div>
     </Teleport>
 </template>
+
+<style scoped>
+.portfolio-description :deep(*:first-child) {
+    margin-top: 0;
+}
+
+.portfolio-description :deep(*:last-child) {
+    margin-bottom: 0;
+}
+
+.portfolio-description :deep(p),
+.portfolio-description :deep(ul),
+.portfolio-description :deep(ol),
+.portfolio-description :deep(blockquote) {
+    margin: 0.75rem 0;
+}
+
+.portfolio-description :deep(ul),
+.portfolio-description :deep(ol) {
+    padding-left: 1.25rem;
+}
+
+.portfolio-description :deep(ul) {
+    list-style: disc;
+}
+
+.portfolio-description :deep(ol) {
+    list-style: decimal;
+}
+
+.portfolio-description :deep(a) {
+    color: #013A3B;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.dark .portfolio-description :deep(a) {
+    color: #2dd4bf;
+}
+
+.portfolio-description :deep(strong) {
+    color: #001818;
+    font-weight: 700;
+}
+
+.dark .portfolio-description :deep(strong) {
+    color: #f8fafc;
+}
+
+.portfolio-description :deep(h2),
+.portfolio-description :deep(h3) {
+    color: #001818;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 1rem 0 0.5rem;
+}
+
+.dark .portfolio-description :deep(h2),
+.dark .portfolio-description :deep(h3) {
+    color: #f8fafc;
+}
+
+.portfolio-description :deep(h2) {
+    font-size: 1.125rem;
+}
+
+.portfolio-description :deep(h3) {
+    font-size: 1rem;
+}
+</style>
